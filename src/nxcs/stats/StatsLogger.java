@@ -1,105 +1,139 @@
-//package nxcs.stats;
-//
-//import java.awt.Color;
-//import java.awt.Paint;
-//import java.io.File;
-//import java.io.FileWriter;
-//import java.io.IOException;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import javax.imageio.ImageIO;
-//
-//import org.jfree.chart.ChartFactory;
-//import org.jfree.chart.JFreeChart;
-//import org.jfree.chart.axis.NumberAxis;
-//import org.jfree.chart.axis.NumberTickUnit;
-//import org.jfree.chart.plot.XYPlot;
-//import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-//import org.jfree.data.xy.XYSeries;
-//import org.jfree.data.xy.XYSeriesCollection;
-//
-//public class StatsLogger {
-//
-//	private int xInterval;
-//	private int yInterval;
-//
-//	public StatsLogger(int xint, int yint) {
-//		this.xInterval = xint;
-//		this.yInterval = yint;
-//	}
-//
-//	private List<List<Snapshot>> snapshots = new ArrayList<List<Snapshot>>();
-//
-//	public void logRun(List<Snapshot> stats) {
-//		for (int j = 0; j < stats.size(); j++) {
-//			if (snapshots.size() <= j) {
-//				snapshots.add(new ArrayList<Snapshot>());
-//			}
-//			snapshots.get(j).add(stats.get(j));
-//		}
-//	}
-//
-//	public void logTrial(List<List<Snapshot>> stats) {
-//		for (int j = 0; j < stats.size(); j++) {
-//			for (int i = 0; i < stats.get(0).size(); i++) {
-//				if (snapshots.size() <= j) {
-//					snapshots.add(new ArrayList<Snapshot>());
-//				}
-//				snapshots.get(j).add(stats.get(j).get(i));
-//			}
-//		}
-//	}
-//
-//	public List<List<Snapshot>> getStatsList() {
-//		return snapshots;
-//	}
-//
-//	public void writeLogAndCSVFiles(String csvFile, String logFile, String hyperMeasure) throws IOException {
-//		File csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "Average"));
-//		csv.getParentFile().mkdirs();
-//		FileWriter dataWriter = new FileWriter(csv);
-//
-//		// Write Column Headers
-//		dataWriter
-//				.write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
-//						+ hyperMeasure + "\n");
-//
-//		for (int i = 0; i < snapshots.size(); i++) {
-//			File finalLogFile = new File(logFile.replaceAll("<TIMESTEP_NUM>", "" + i));
-//			finalLogFile.getParentFile().mkdirs();
-//			FileWriter logWriter = new FileWriter(finalLogFile);
-//			List<Snapshot> stats = snapshots.get(i);
-//			try {
-//				for (int j = 0; j < stats.size(); j++) {
-//					Snapshot s = stats.get(j);
-//					logWriter.append(s.toString());
-//					logWriter.append("\n\n");
-//				}
-//
-//				dataWriter.append(Snapshot.average(stats).toCSV());
-//			} finally {
-//				logWriter.close();
-//			}
-//		}
-//		dataWriter.close();
-//
-//		for (int i = 0; i < snapshots.get(0).size(); i++) {
-//			csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "" + (i + 1)));
-//			try {
-//				dataWriter = new FileWriter(csv);
-//				dataWriter
-//						.write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
-//								+ hyperMeasure + "\n");
-//				for (int j = 0; j < snapshots.size(); j++) {
-//					dataWriter.append(snapshots.get(j).get(i).toCSV());
-//				}
-//			} finally {
-//				dataWriter.close();
-//			}
-//		}
-//	}
-//
+package nxcs.stats;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StatsLogger {
+
+	private int xInterval;
+	private int yInterval;
+
+	public StatsLogger(int xint, int yint) {
+		this.xInterval = xint;
+		this.yInterval = yint;
+	}
+
+	private List<List<Snapshot>> snapshots = new ArrayList<List<Snapshot>>();
+
+	public void logRun(List<Snapshot> stats) {
+		for (int j = 0; j < stats.size(); j++) {
+			if (snapshots.size() <= j) {
+				snapshots.add(new ArrayList<Snapshot>());
+			}
+			snapshots.get(j).add(stats.get(j));
+		}
+	}
+
+	public void logTrial(List<List<Snapshot>> stats) {
+		for (int j = 0; j < stats.size(); j++) {
+			for (int i = 0; i < stats.get(0).size(); i++) {
+				if (snapshots.size() <= j) {
+					snapshots.add(new ArrayList<Snapshot>());
+				}
+				snapshots.get(j).add(stats.get(j).get(i));
+			}
+		}
+	}
+
+	public List<List<Snapshot>> getStatsList() {
+		return snapshots;
+	}
+
+	public void writeLogAndCSVFiles(String csvFile, String logFile, String hyperMeasure) throws IOException {
+		File csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "Average"));
+		csv.getParentFile().mkdirs();
+		FileWriter dataWriter = new FileWriter(csv);
+
+		// Write Column Headers
+		dataWriter
+				.write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
+						+ hyperMeasure + "\n");
+
+		for (int i = 0; i < snapshots.size(); i++) {
+			File finalLogFile = new File(logFile.replaceAll("<TIMESTEP_NUM>", "" + i));
+			finalLogFile.getParentFile().mkdirs();
+			FileWriter logWriter = new FileWriter(finalLogFile);
+			List<Snapshot> stats = snapshots.get(i);
+			try {
+				for (int j = 0; j < stats.size(); j++) {
+					Snapshot s = stats.get(j);
+					logWriter.append(s.toString());
+					logWriter.append("\n\n");
+				}
+
+				dataWriter.append(Snapshot.average(stats).toCSV());
+			} finally {
+				logWriter.close();
+			}
+		}
+		dataWriter.close();
+
+		for (int i = 0; i < snapshots.get(0).size(); i++) {
+			csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "" + (i + 1)));
+			try {
+				dataWriter = new FileWriter(csv);
+				dataWriter
+						.write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
+								+ hyperMeasure + "\n");
+				for (int j = 0; j < snapshots.size(); j++) {
+					dataWriter.append(snapshots.get(j).get(i).toCSV());
+				}
+			} finally {
+				dataWriter.close();
+			}
+		}
+	}
+
+
+    public void writeLogAndCSVFiles_PA(String csvFile, String logFile, String hyperMeasure) throws IOException {
+        File csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "Average"));
+        csv.getParentFile().mkdirs();
+        FileWriter dataWriter = new FileWriter(csv);
+
+        // Write Column Headers
+        dataWriter
+                .write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
+                        + hyperMeasure + "\n");
+
+        for (int i = 0; i < snapshots.size(); i++) {
+            File finalLogFile = new File(logFile.replaceAll("<TIMESTEP_NUM>", "" + i));
+            finalLogFile.getParentFile().mkdirs();
+            FileWriter logWriter = new FileWriter(finalLogFile);
+            List<Snapshot> stats = snapshots.get(i);
+            try {
+                for (int j = 0; j < stats.size(); j++) {
+                    Snapshot s = stats.get(j);
+                    logWriter.append(s.toString());
+                    logWriter.append("\n\n");
+                }
+
+                dataWriter.append(Snapshot.average(stats).toCSV());
+            } finally {
+                logWriter.close();
+            }
+        }
+        dataWriter.close();
+
+        for (int i = 0; i < snapshots.get(0).size(); i++) {
+            csv = new File(csvFile.replaceAll("<TRIAL_NUM>", "" + (i + 1)));
+            try {
+                dataWriter = new FileWriter(csv);
+                dataWriter
+                        .write("Number of Learning Problems, Population Size, Average Fitness, Average Specificity, Macro Classifier Proportion, "
+                                + hyperMeasure + "\n");
+                for (int j = 0; j < snapshots.size(); j++) {
+                    dataWriter.append(snapshots.get(j).get(i).toCSV());
+                }
+            } finally {
+                dataWriter.close();
+            }
+        }
+    }
+
+
 //	public void writeChartsAsSinglePlot(String chartFile, String problem, String performanceMeasure,
 //			String hyperMeasure) throws IOException {
 //		List<Snapshot> averages = new ArrayList<Snapshot>();
@@ -171,7 +205,7 @@
 //			System.out.printf("Wrote %s with size %d%n", finalChartFile.getAbsolutePath(), finalChartFile.length());
 //		}
 //	}
-//
+
 //	public void writeChartsAsMultiPlot(String chartFile, String problem, String[] legendNames,
 //			String performanceMeasure, String hyperMeasure) throws IOException {
 //		// snapshots.size() = number of algorithms
@@ -232,5 +266,5 @@
 //			System.out.printf("Wrote %s with size %d%n", finalChartFile.getAbsolutePath(), finalChartFile.length());
 //		}
 //	}
-//
-//}
+
+}

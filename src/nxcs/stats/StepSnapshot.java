@@ -1,125 +1,224 @@
 package nxcs.stats;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import nxcs.Qvector;
-
 public class StepSnapshot {
-	private int timestamp;
-	private Point openState;
-	private Point finalState;
-	private int steps;
-	private List<Point> path;
+    private int timestamp;
+    private Point openState;
+    private Point finalState;
 
-	public int getTimestamp() {
-		return timestamp;
-	}
+    private int exp_repeat;
+    private int finalCount;
+    private int experiment_num;
+    private double first_reward;
+    private Point weight;
+    private int steps;
+    private double Q_finalreward_left;
+    private double Q_finalreward_right;
+    private double Q_finalreward_delta;
+    private double Q_finalreward_max;
+    private double Q_steps_left;
+    private double Q_steps_right;
+    private double Q_steps_delta;
+    private double Q_steps_max;
+    private List<Point> path;
 
-	public void setTimestamp(int timestamp) {
-		this.timestamp = timestamp;
-	}
+    public int getTimestamp() {
+        return timestamp;
+    }
 
-	public Point getOpenState() {
-		return openState;
-	}
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public void setOpenState(Point openState) {
-		this.openState = openState;
-	}
+    public Point getOpenState() {
+        return openState;
+    }
 
-	public Point getFinalState() {
-		return finalState;
-	}
+    public void setOpenState(Point openState) {
+        this.openState = openState;
+    }
 
-	public void setFinalState(Point finalState) {
-		this.finalState = finalState;
-	}
+    public Point getFinalState() {
+        return finalState;
+    }
 
-	public int getSteps() {
-		return steps;
-	}
+    public void setFinalState(Point finalState) {
+        this.finalState = finalState;
+    }
 
-	public void setSteps(int steps) {
-		this.steps = steps;
-	}
+    public int getSteps() {
+        return steps;
+    }
 
-	public List<Point> getPath() {
-		return path;
-	}
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
 
-	public void setPath(List<Point> path) {
-		this.path = path;
-	}
+    public List<Point> getPath() {
+        return path;
+    }
 
-	public StepSnapshot(int timestamp, Point openState, Point finalState, int steps, ArrayList<Point> path) {
-		this.timestamp = timestamp;
-		this.openState = openState;
-		this.finalState = finalState;
-		this.steps = steps;
-		this.setPath(path);
-	}
+    public void setPath(List<Point> path) {
+        this.path = path;
+    }
 
-	public StepSnapshot(Point openState, Point finalState, int steps, ArrayList<Point> path) {
-		this(0, openState, finalState, steps, path);
-	}
+    public StepSnapshot(int timestamp, Point openState, Point finalState, int steps, ArrayList<Point> path) {
+        this.timestamp = timestamp;
+        this.openState = openState;
+        this.finalState = finalState;
+        this.steps = steps;
+        this.setPath(path);
+    }
 
-	public StepSnapshot(int timestamp, Point openState, Point finalState, int steps) {
-		this(timestamp, openState, finalState, steps, null);
-	}
+    public StepSnapshot(int exp_repeat, int finalCount, Point weight, double first_reward, Point openState, double Q_finalreward_left, double Q_finalreward_right, double Q_finalreward_delta, double Q_finalreward_max, double Q_steps_left, double Q_steps_right, double Q_steps_delta, double Q_steps_max) {
+        this.exp_repeat = exp_repeat;
+        this.finalCount = finalCount;
+        this.timestamp = finalCount;
+        this.openState = openState;
+        this.weight = weight;
+        this.first_reward = first_reward;
+        this.Q_finalreward_left = Q_finalreward_left;
+        this.Q_finalreward_right = Q_finalreward_right;
+        this.Q_finalreward_delta = Q_finalreward_delta;
+        this.Q_finalreward_max = Q_finalreward_max;
+        this.Q_steps_left = Q_steps_left;
+        this.Q_steps_right = Q_steps_right;
+        this.Q_steps_delta = Q_steps_delta;
+        this.Q_steps_max = Q_steps_max;
+        this.setPath(path);
+    }
 
-	public StepSnapshot(Point openState, Point finalState, int steps) {
-		this(0, openState, finalState, steps, null);
-	}
+    public StepSnapshot(Point openState, Point finalState, int steps, ArrayList<Point> path) {
+        this(0, openState, finalState, steps, path);
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder build = new StringBuilder();
-		build.append(String.format("Timestep:%d", this.timestamp));
-		build.append(String.format("\tOpen State:(%d,%d)", (int) this.openState.getX(), (int) this.openState.getY()));
-		build.append(
-				String.format("\tFinal State:(%d,%d)", (int) this.finalState.getX(), (int) this.finalState.getY()));
-		build.append(String.format("\tSteps: %d", this.steps));
-		build.append("\tPath:");
-		if (this.path.size() > 0)
-			for (Point p : this.path) {
-				build.append(String.format("->(%d,%d)", (int) p.getX(), (int) p.getY()));
-			}
-		build.append("->");
-		return build.toString();
-	}
+    public StepSnapshot(int timestamp, Point openState, Point finalState, int steps) {
+        this(timestamp, openState, finalState, steps, null);
+    }
 
-	public String toCSV() {
-		StringBuilder build = new StringBuilder();
-		build.append(this.timestamp);
-		build.append(", ");
-		build.append(String.format("(%d-%d)", (int) this.openState.getX(), (int) this.openState.getY()));
-		build.append(", ");
-		build.append(String.format("(%d-%d)", (int) this.finalState.getX(), (int) this.finalState.getY()));
-		build.append(", ");
-		build.append(this.steps);
-		build.append(", ");
-		if (this.path.size() > 0)
-			for (Point p : this.path) {
-				build.append(String.format("->(%d-%d)", (int) p.getX(), (int) p.getY()));
-			}
-		build.append("->");
-		build.append("\n");
+    public StepSnapshot(Point openState, Point finalState, int steps) {
+        this(0, openState, finalState, steps, null);
+    }
 
-		return build.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder build = new StringBuilder();
+        build.append(String.format("%d", this.experiment_num));
+        build.append(", ");
+        build.append(String.format("%d", this.timestamp));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.weight.getX(), (int) this.weight.getY()));
+        build.append(", ");
+        build.append(String.format("%f", this.first_reward));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.openState.getX(), (int) this.openState.getY()));
+        build.append(", ");
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof StepSnapshot))
-			return false;
-		if (obj == this)
-			return true;
-		StepSnapshot q = (StepSnapshot) obj;
-		if (this.openState.equals(q.openState) && this.finalState.equals(q.finalState) && this.steps == q.steps)
-			return true;
-		else
-			return false;
-	}
+        build.append(String.format("%f", this.Q_finalreward_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_max));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_max));
+//		build.append(", ");
+//
+//		if (this.path.size() > 0)
+//			for (Point p : this.path) {
+//				build.append(String.format("->(%d-%d)", (int) p.getX(), (int) p.getY()));
+//			}
+//		build.append("->");
+        build.append("\n");
+
+        return build.toString();
+    }
+
+    public String toCSV() {
+
+
+        StringBuilder build = new StringBuilder();
+        build.append(this.timestamp);
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.openState.getX(), (int) this.openState.getY()));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.finalState.getX(), (int) this.finalState.getY()));
+        build.append(", ");
+        build.append(this.steps);
+        build.append(", ");
+        if (this.path.size() > 0)
+            for (Point p : this.path) {
+                build.append(String.format("->(%d-%d)", (int) p.getX(), (int) p.getY()));
+            }
+        build.append("->");
+        build.append("\n");
+
+        return build.toString();
+    }
+
+    //TODO:update toCSV
+    public String toCSV_PA() {
+        //experiment_num, timestamp, weight, obj_r1, p, Q_finalreward_left, Q_finalreward_right, Q_finalreward_delta, Q_finalreward_max, Q_steps_left, Q_steps_right, Q_steps_delta, Q_steps_max);
+
+        StringBuilder build = new StringBuilder();
+        build.append(String.format("%d", this.experiment_num));
+        build.append(", ");
+        build.append(String.format("%d", this.timestamp));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.weight.getX(), (int) this.weight.getY()));
+        build.append(", ");
+        build.append(String.format("%f", this.first_reward));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.openState.getX(), (int) this.openState.getY()));
+        build.append(", ");
+
+        build.append(String.format("%f", this.Q_finalreward_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_max));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_max));
+//		build.append(", ");
+//
+//		if (this.path.size() > 0)
+//			for (Point p : this.path) {
+//				build.append(String.format("->(%d-%d)", (int) p.getX(), (int) p.getY()));
+//			}
+//		build.append("->");
+        build.append("\n");
+
+        return build.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof StepSnapshot))
+            return false;
+        if (obj == this)
+            return true;
+        StepSnapshot q = (StepSnapshot) obj;
+        if (this.openState.equals(q.openState) && this.finalState.equals(q.finalState) && this.steps == q.steps)
+            return true;
+        else
+            return false;
+    }
 }

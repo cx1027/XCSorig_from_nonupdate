@@ -20,7 +20,7 @@ public interface Environment {
 	 * @param action The action to perform
 	 * @return The reward of performing the given action in the given state
 	 */
-	public ActionPareto getReward(String state, int action);
+	public ActionPareto getReward(String state, int action, double first_reward);
 	
 	
 	

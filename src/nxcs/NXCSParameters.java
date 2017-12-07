@@ -1,5 +1,9 @@
 package nxcs;
 
+import java.awt.*;
+import java.util.List;
+
+
 /**
  * The parameters of an NXCS system. These are much the same as the ones used in
  * XCS and thus the comments regarding their purpose are mostly taken from
@@ -139,7 +143,9 @@ public class NXCSParameters {
 	/**
 	 * The weights is a two dimension array，each weight is a number pair (0.1,0.9)
 	 */
-	public double[][] weights;
+	public List<Point> weights;
+
+	public int[] obj1;
 	
 	
 

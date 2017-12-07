@@ -1,5 +1,6 @@
 package nxcs;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,7 +95,7 @@ public class NXCS {
 	 *            The state to classify
 	 * @return The class the system classifies the given state into
 	 */
-	public int classify(String state, double[] weight) {
+	public int classify(String state, Point weight) {
 		if (state.length() != params.stateLength)
 			throw new IllegalArgumentException(
 					String.format("The given state (%s) is not of the correct length", state));
@@ -141,7 +142,7 @@ public class NXCS {
 	/**
 	 * Runs a single iteration of the learning process of this NXCS instance
 	 */
-	public void runIteration(int finalStateCount, String previousState, double[] weight, int i) {
+	public void runIteration(int finalStateCount, String previousState, Point weight, int i, double firstreward) {
 		// action
 		int action = -1;
 
@@ -156,13 +157,13 @@ public class NXCS {
 			action = XienceMath.randomInt(params.numActions);
 		}
 
-		if (i < 40) {
-			action = 2;
-			System.out.println("action: " + action);
-		} else {
-			action = 1;
-			System.out.println("action: " + action);
-		}
+//		if (i < 40) {
+//			action = 2;
+//			System.out.println("action: " + action);
+//		} else {
+//			action = 1;
+//			System.out.println("action: " + action);
+//		}
 
 		// System.out.println("****action:" + action);
 		// if (i == 2) {
@@ -238,7 +239,7 @@ public class NXCS {
 		// }
 
 		/* get immediate reward */
-		Reward = env.getReward(previousState, action);
+		Reward = env.getReward(previousState, action, firstreward);
 		if (Reward.getAction() == 5) { /*
 										 * ???which means cant find F in 100,
 										 * then reset in getReward()
@@ -251,8 +252,8 @@ public class NXCS {
 		/* if previous State!null, update [A]-1 and run ga */
 		if (previousState != null) {
 			/* updateSet include P calculation */
-			List<Classifier> setA = updateSet(previousState, curState, action, Reward, weight);
-			// runGA(setA, previousState);
+			List<Classifier> setA = updateSet(previousState, curState, action, Reward);
+			 runGA(setA, previousState);
 		}
 
 		/* update a-1=a */
@@ -373,7 +374,7 @@ public class NXCS {
 	 *            The match set to use consider for these predictions
 	 * @return The prediction array calculated
 	 */
-	public double[] generatePredictions1(List<Classifier> setM, double[] weight) {
+	public double[] generatePredictions1(List<Classifier> setM, Point weight) {
 		double[] predictions0 = new double[params.numActions];
 		double[] fitnessSum0 = new double[params.numActions];
 		if (setM.size() == 0)
@@ -441,7 +442,7 @@ public class NXCS {
 		return getTotalPrediciton(weight, predictions0, predictions1);
 	}
 
-	public double[] generateTotalPredictions(List<Classifier> setM, double[] weight) {
+	public double[] generateTotalPredictions(List<Classifier> setM, Point weight) {
 		double[] predictions0 = generatePredictions(setM, 0);
 		// if(predictions0[0]==Double.NaN){
 		// System.out.println("!!!!!!!!!!!!!NAN");
@@ -487,10 +488,10 @@ public class NXCS {
 		return predictions;
 	}
 
-	public double[] getTotalPrediciton(double[] weight, double[] pred0, double[] pred1) {
+	public double[] getTotalPrediciton(Point weight, double[] pred0, double[] pred1) {
 		double[] totalPre = new double[pred0.length];
 		for (int i = 0; i < pred0.length; i++) {
-			totalPre[i] = weight[0] * pred0[i] + weight[1] * pred1[i];
+			totalPre[i] = weight.getX() * pred0[i] + weight.getY() * pred1[i];
 		}
 		return totalPre;
 	}
@@ -627,8 +628,7 @@ public class NXCS {
 	 * @return The action set of the previous state, with subsumption (possibly)
 	 *         applied
 	 */
-	private List<Classifier> updateSet(String previousState, String currentState, int action, ActionPareto reward,
-			double[] w) {
+	private List<Classifier> updateSet(String previousState, String currentState, int action, ActionPareto reward) {
 		List<Classifier> previousMatchSet = generateMatchSet(previousState);
 
 		/*
