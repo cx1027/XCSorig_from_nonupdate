@@ -47,7 +47,7 @@ public class NXCS {
 	/**
 	 * The reward received in the previous timestep of this system
 	 */
-	private ActionPareto Reward;
+	private ActionPareto reward;
 
 	/**
 	 * The state this system was in in the previous timestep of this system
@@ -245,8 +245,8 @@ public class NXCS {
 		// }
 
 		/* get immediate reward */
-		Reward = env.getReward(previousState, action, firstreward);
-		if (Reward.getAction() == 5) { /*
+		reward = env.getReward(previousState, action, firstreward);
+		if (reward.getAction() == 5) { /*
 										 * ???which means cant find F in 100,
 										 * then reset in getReward()
 										 */
@@ -261,7 +261,7 @@ public class NXCS {
 		/* if previous State!null, update [A]-1 and run ga */
 		if (previousState != null) {
 			/* updateSet include P calculation */
-			List<Classifier> setA = updateSet(previousState, curState, action, Reward);
+			List<Classifier> setA = updateSet(previousState, curState, action, reward);
 			 runGA(setA, previousState);
 		}
 

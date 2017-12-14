@@ -297,7 +297,8 @@ public class maze1_weighted_sum implements Environment {
                                     // test algorithem
                                     System.out.println("testing process: Trained on " + finalStateCount + " final states");
 
-                                    Integer testPositionIndex = 0;
+                                    Integer test = 0;
+                                    System.out.println("test:" + test);
                                     int timestamp = 0;
                                     System.out.println("strat testing:");
 
@@ -307,10 +308,11 @@ public class maze1_weighted_sum implements Environment {
                                     int stepEachTrail = 0;
                                     int resetPoint = 0;
 
-                                    maze.resetToSamePosition(maze.openLocations.get(testPositionIndex));
+                                    maze.resetToSamePosition(maze.openLocations.get(test));
 
-                                    System.out.println("reset to number P:" + testPositionIndex);
-                                    while (testPositionIndex < maze.openLocations.size() - 1) {
+                                    System.out.println("reset to number P:" + test);
+//                                    test++;
+                                    while (test < maze.openLocations.size()) {
                                         // String state = maze.getState();
                                         String state = maze.getState();
                                         // System.out.println("get state");
@@ -335,17 +337,19 @@ public class maze1_weighted_sum implements Environment {
                                         // System.out.println("take testing:");
                                         if (maze.isEndOfProblem(maze.getState())) {
 
-                                            testPositionIndex++;
-                                            Point testPoint = maze.openLocations.get(testPositionIndex); //maze.getTestLocation(test, testLocations);
+                                            test++;
+                                            if (test < maze.openLocations.size()) {
+                                                Point testPoint = maze.openLocations.get(test); //maze.getTestLocation(test, testLocations);
 
 
-                                            maze.resetToSamePosition(testPoint);
-                                            System.out.println(String.format("Test:%d, resetPoint:%d, testLocation:%s", testPositionIndex, resetPoint, testPoint));
-                                            stepEachTrail = 0;
+                                                maze.resetToSamePosition(testPoint);
+//                                            System.out.println(String.format("Test:%d, resetPoint:%d, testLocation:%s", test, resetPoint, testPoint));
+                                                stepEachTrail = 0;
 
-                                            // maze.resetPosition();
+                                                // maze.resetPosition();
 
-                                            resetPoint++;
+                                                resetPoint++;
+                                            }
 
                                         }
                                         timestamp++;
@@ -372,7 +376,7 @@ public class maze1_weighted_sum implements Environment {
 
                                     finalStateCount++;
 
-                                    System.out.println("avg steps:" + ((double) (timestamp)) / testPositionIndex);
+                                    System.out.println("avg steps:" + ((double) (timestamp)) / test);
 
                                     System.out.println("classfiers:");
 
