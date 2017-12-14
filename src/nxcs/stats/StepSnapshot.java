@@ -22,7 +22,12 @@ public class StepSnapshot {
     private double Q_steps_left;
     private double Q_steps_right;
     private double Q_steps_delta;
-    private double Q_steps_max;
+    private double Q_steps_min;
+    private double Q_total_left;
+    private double Q_total_right;
+    private double Q_finalreward_select;
+    private double Q_steps_select;
+    private double Q_total_select;
     private List<Point> path;
 
     public int getTimestamp() {
@@ -73,7 +78,7 @@ public class StepSnapshot {
         this.setPath(path);
     }
 
-    public StepSnapshot(int exp_repeat, int finalCount, Point weight, double first_reward, Point openState, double Q_finalreward_left, double Q_finalreward_right, double Q_finalreward_delta, double Q_finalreward_max, double Q_steps_left, double Q_steps_right, double Q_steps_delta, double Q_steps_max) {
+    public StepSnapshot(int exp_repeat, int finalCount, Point weight, double first_reward, Point openState, double Q_finalreward_left, double Q_finalreward_right, double Q_finalreward_delta, double Q_finalreward_max, double Q_steps_left, double Q_steps_right, double Q_steps_delta, double Q_steps_min) {
         this.exp_repeat = exp_repeat;
         this.finalCount = finalCount;
         this.timestamp = finalCount;
@@ -87,7 +92,30 @@ public class StepSnapshot {
         this.Q_steps_left = Q_steps_left;
         this.Q_steps_right = Q_steps_right;
         this.Q_steps_delta = Q_steps_delta;
-        this.Q_steps_max = Q_steps_max;
+        this.Q_steps_min = Q_steps_min;
+        this.setPath(path);
+    }
+
+    public StepSnapshot(int exp_repeat, int finalCount, Point weight, double first_reward, Point openState, double Q_finalreward_left, double Q_finalreward_right, double Q_finalreward_delta, double Q_finalreward_max, double Q_steps_left, double Q_steps_right, double Q_steps_delta, double Q_steps_min, double Q_total_left, double Q_total_right, double Q_finalreward_select, double Q_steps_select, double Q_total_select) {
+        this.exp_repeat = exp_repeat;
+        this.finalCount = finalCount;
+        this.timestamp = finalCount;
+        this.openState = openState;
+        this.weight = weight;
+        this.first_reward = first_reward;
+        this.Q_finalreward_left = Q_finalreward_left;
+        this.Q_finalreward_right = Q_finalreward_right;
+        this.Q_finalreward_delta = Q_finalreward_delta;
+        this.Q_finalreward_max = Q_finalreward_max;
+        this.Q_steps_left = Q_steps_left;
+        this.Q_steps_right = Q_steps_right;
+        this.Q_steps_delta = Q_steps_delta;
+        this.Q_steps_min = Q_steps_min;
+        this.Q_total_left = Q_total_left;
+        this.Q_total_right = Q_total_right;
+        this.Q_finalreward_select = Q_finalreward_select;
+        this.Q_steps_select = Q_steps_select;
+        this.Q_total_select = Q_total_select;
         this.setPath(path);
     }
 
@@ -109,7 +137,7 @@ public class StepSnapshot {
         build.append(String.format("%d", this.experiment_num));
         build.append(", ");
         build.append(String.format("%d", this.timestamp));
-        build.append(", ");
+        build.append(",");
         build.append(String.format("(%d-%d)", (int) this.weight.getX(), (int) this.weight.getY()));
         build.append(", ");
         build.append(String.format("%f", this.first_reward));
@@ -131,7 +159,7 @@ public class StepSnapshot {
         build.append(", ");
         build.append(String.format("%f", this.Q_steps_delta));
         build.append(", ");
-        build.append(String.format("%f", this.Q_steps_max));
+        build.append(String.format("%f", this.Q_steps_min));
 //		build.append(", ");
 //
 //		if (this.path.size() > 0)
@@ -168,7 +196,7 @@ public class StepSnapshot {
 
     //TODO:update toCSV
     public String toCSV_PA() {
-        //experiment_num, timestamp, weight, obj_r1, p, Q_finalreward_left, Q_finalreward_right, Q_finalreward_delta, Q_finalreward_max, Q_steps_left, Q_steps_right, Q_steps_delta, Q_steps_max);
+        //experiment_num, timestamp, weight, obj_r1, p, Q_finalreward_left, Q_finalreward_right, Q_finalreward_delta, Q_finalreward_max, Q_steps_left, Q_steps_right, Q_steps_delta, Q_steps_min);
 
         StringBuilder build = new StringBuilder();
         build.append(String.format("%d", this.experiment_num));
@@ -196,7 +224,7 @@ public class StepSnapshot {
         build.append(", ");
         build.append(String.format("%f", this.Q_steps_delta));
         build.append(", ");
-        build.append(String.format("%f", this.Q_steps_max));
+        build.append(String.format("%f", this.Q_steps_min));
 //		build.append(", ");
 //
 //		if (this.path.size() > 0)
@@ -208,6 +236,60 @@ public class StepSnapshot {
 
         return build.toString();
     }
+
+
+    public String to_Total_CSV_PA() {
+        //experiment_num, timestamp, weight, obj_r1, p, Q_finalreward_left, Q_finalreward_right, Q_finalreward_delta, Q_finalreward_max, Q_steps_left, Q_steps_right, Q_steps_delta, Q_steps_min);
+
+        StringBuilder build = new StringBuilder();
+        build.append(String.format("%d", this.experiment_num));
+        build.append(", ");
+        build.append(String.format("%d", this.timestamp));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.weight.getX(), (int) this.weight.getY()));
+        build.append(", ");
+        build.append(String.format("%f", this.first_reward));
+        build.append(", ");
+        build.append(String.format("(%d-%d)", (int) this.openState.getX(), (int) this.openState.getY()));
+        build.append(", ");
+
+        build.append(String.format("%f", this.Q_finalreward_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_max));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_delta));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_min));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_total_left));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_total_right));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_finalreward_select));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_steps_select));
+        build.append(", ");
+        build.append(String.format("%f", this.Q_total_select));
+//		build.append(", ");
+//
+//		if (this.path.size() > 0)
+//			for (Point p : this.path) {
+//				build.append(String.format("->(%d-%d)", (int) p.getX(), (int) p.getY()));
+//			}
+//		build.append("->");
+        build.append("\n");
+
+        return build.toString();
+    }
+
 
     @Override
     public boolean equals(Object obj) {

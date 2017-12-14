@@ -1,5 +1,9 @@
 package nxcs;
 
+import nxcs.testbed.maze1_weighted_sum;
+
+import java.awt.*;
+
 /**
  * An interface that represents an Environment that an NXCS instance
  * can operate on.
@@ -21,7 +25,11 @@ public interface Environment {
 	 * @return The reward of performing the given action in the given state
 	 */
 	public ActionPareto getReward(String state, int action, double first_reward);
-	
+
+//	public ActionPareto getReward1(String state, int action, double first_reward, int finalStateCount, maze1_weighted_sum maze, Point weight, NXCS nxcs, NXCSParameters params);
+
+
+	public void printOpenLocationClassifiers(int timestamp, maze1_weighted_sum maze, NXCS nxcs, Point weight, double obj_r1);
 	
 	
 	/**

@@ -1,14 +1,10 @@
 package nxcs;
 
+import nxcs.testbed.maze1_weighted_sum;
+
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -58,6 +54,8 @@ public class NXCS {
 	 */
 	private String previousState;
 
+    private final int INVALID_ACTION = -1;
+
 	/**
 	 * Constructs an NXCS instance, operating on the given environment with the
 	 * given parameters
@@ -101,9 +99,17 @@ public class NXCS {
 					String.format("The given state (%s) is not of the correct length", state));
 		List<Classifier> matchSet = population.stream().filter(c -> stateMatches(c.condition, state))
 				.collect(Collectors.toList());
-		double[] predictions = generateTotalPredictions(matchSet, weight);
-		return getActionDeterministic(predictions);
+        double[] predictions = generateTotalPredictions_Norm(matchSet, weight);
+        return getActionDeterministic(predictions);
 	}
+
+    //TODO:return the PA1[action]
+    public double getSelectPA(int action, String state) {
+        List<Classifier> matchSet = population.stream().filter(c -> stateMatches(c.condition, state))
+                .collect(Collectors.toList());
+        double[] predictions_reward = generatePredictions(matchSet, 1);
+        return predictions_reward[action];
+    }
 
 	/**
 	 * calculate hyper volume of current state
@@ -142,9 +148,9 @@ public class NXCS {
 	/**
 	 * Runs a single iteration of the learning process of this NXCS instance
 	 */
-	public void runIteration(int finalStateCount, String previousState, Point weight, int i, double firstreward) {
-		// action
-		int action = -1;
+    public void runIteration(int finalStateCount, String previousState, Point weight, int i, double firstreward, maze1_weighted_sum maze) {
+        // action
+        int action = INVALID_ACTION;
 
 		/* form [M] */
 		List<Classifier> matchSet = generateMatchSet(previousState);
@@ -245,7 +251,10 @@ public class NXCS {
 										 * then reset in getReward()
 										 */
 			previousState = null;
-		}
+            System.out.println("get stucked:classfiers:");
+
+//			env.printOpenLocationClassifiers(finalStateCount, maze, this, weight, params.obj1[0]);
+        }
 		/* get current state */
 		String curState = env.getState();
 
@@ -442,6 +451,35 @@ public class NXCS {
 		return getTotalPrediciton(weight, predictions0, predictions1);
 	}
 
+    public double[] generateTotalPredictions_Norm(List<Classifier> setM, Point weight) {
+        double[] predictions0 = generatePredictions(setM, 0);
+        // if(predictions0[0]==Double.NaN){
+        // System.out.println("!!!!!!!!!!!!!NAN");
+        // }
+        double[] predictions1 = generatePredictions(setM, 1);
+        // if(predictions1[0]==Double.NaN){
+        // System.out.println("!!!!!!!!!!!!!NAN");
+        // }
+
+        double[] predictions0_nor = new double[4];
+        double[] predictions1_nor = new double[4];
+        //normalisation
+        for (int i = 0; i < predictions0.length; i++) {
+            predictions0_nor[i] = stepNor(predictions0[i], 100);
+        }
+        for (int i = 0; i < predictions1.length; i++) {
+            predictions1_nor[i] = rewardNor(predictions1[i], 1000, 0);
+        }
+
+        double[] aaa = getTotalPrediciton(weight, predictions0_nor, predictions1_nor);
+        if (aaa[0] == Double.NaN) {
+            System.out.println("!!!!!!!!!!!!!NAN");
+        }
+
+        return aaa;
+    }
+
+
 	public double[] generateTotalPredictions(List<Classifier> setM, Point weight) {
 		double[] predictions0 = generatePredictions(setM, 0);
 		// if(predictions0[0]==Double.NaN){
@@ -451,6 +489,7 @@ public class NXCS {
 		// if(predictions1[0]==Double.NaN){
 		// System.out.println("!!!!!!!!!!!!!NAN");
 		// }
+
 		double[] aaa = getTotalPrediciton(weight, predictions0, predictions1);
 		if (aaa[0] == Double.NaN) {
 			System.out.println("!!!!!!!!!!!!!NAN");
@@ -518,15 +557,19 @@ public class NXCS {
 		// return max PA
 		// List b = Arrays.asList(PA);
 		// return (double) Collections.max(b);
-		return getMaxPrediction(PA);
+//		for (int i=0; i<PA.length;i++
+//			 ) {
+//			System.out.println(String.format("PA[%d] = %f",i,  PA[i]));
+//		}
+        return getMaxPrediction(PA);
 	}
 
 	// return max PA
 	public double getMaxPrediction(double[] PA) {
 		// List b = Arrays.asList(PA);
 		// return (double) Collections.max(b);
-		double max = Arrays.stream(PA).max().getAsDouble();
-		return max;
+        double max = Arrays.stream(PA).filter(d -> !Double.isNaN(d)).max().getAsDouble();
+        return max;
 	}
 
 	// return min PA
@@ -686,12 +729,12 @@ public class NXCS {
 					clas.error[i] = clas.error[i]
 							+ (Math.abs(P[i] - clas.prediction[i]) - clas.error[i]) / clas.experience;
 
-					// normalisation
-					if (i < 1) {
-						clas.prediction[i] = stepNor(clas.prediction[i], 100);
-					} else {
-						clas.prediction[i] = rewardNor(clas.prediction[i], 100, 0);
-					}
+//					 normalisation
+//					if (i < 1) {
+//						clas.prediction[i] = stepNor(clas.prediction[i], 100);
+//					} else {
+//						clas.prediction[i] = rewardNor(clas.prediction[i], 100, 0);
+//					}
 
 				} else {
 					clas.prediction[i] = clas.prediction[i] + (P[i] - clas.prediction[i]) * params.beta;
