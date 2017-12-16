@@ -154,12 +154,14 @@ public class NXCS {
 		List<Classifier> matchSet = generateMatchSet(previousState);
 		/* select a */
 		if (XienceMath.randomInt(params.numActions) <= 1) {
-			double[] predictions = generateTotalPredictions(matchSet, weight);
+			double[] predictions = generateTotalPredictions_Norm(matchSet, weight);
 			// select best actiton, not just explore
 			action = getActionDeterministic(predictions);
 		} else {
 			action = XienceMath.randomInt(params.numActions);
 		}
+
+//        System.out.println("****action:" + action);
 
 //		if (i < 40) {
 //			action = 2;

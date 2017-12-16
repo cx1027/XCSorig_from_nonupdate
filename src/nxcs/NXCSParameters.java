@@ -55,7 +55,7 @@ public class NXCSParameters {
 	/**
 	 * The probability of using a don't care symbol in an allele when covering.
 	 */
-	public double pHash = 0.3;
+	public double pHash = 0.0;
 
 	/**
 	 * The discount rate in multi-step problems.

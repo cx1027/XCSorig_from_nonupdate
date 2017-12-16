@@ -198,26 +198,26 @@ public class maze1_weighted_sum implements Environment {
             params.doGASubsumption = false;
             params.weights = new ArrayList<Point>();
             params.weights.add(new Point(0, 10));
-//            params.weights.add(new Point(1, 9));
-//            params.weights.add(new Point(2, 8));
-//            params.weights.add(new Point(3, 7));
-//            params.weights.add(new Point(4, 6));
-//            params.weights.add(new Point(5, 5));
-//            params.weights.add(new Point(6, 4));
-//            params.weights.add(new Point(7, 3));
-//            params.weights.add(new Point(8, 2));
-//            params.weights.add(new Point(9, 1));
-//            params.weights.add(new Point(10, 0));
+            params.weights.add(new Point(1, 9));
+            params.weights.add(new Point(2, 8));
+            params.weights.add(new Point(3, 7));
+            params.weights.add(new Point(4, 6));
+            params.weights.add(new Point(5, 5));
+            params.weights.add(new Point(6, 4));
+            params.weights.add(new Point(7, 3));
+            params.weights.add(new Point(8, 2));
+            params.weights.add(new Point(9, 1));
+            params.weights.add(new Point(10, 0));
 
-//            params.obj1 = new int[]{10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-            params.obj1 = new int[]{100};
+            params.obj1 = new int[]{10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+//            params.obj1 = new int[]{100};
 
             ArrayList<Point> reward_CSV = new ArrayList<Point>();
             for (int i = 0; i < params.obj1.length; i++) {
                 reward_CSV.add(new Point(params.obj1[i], 1000 - params.obj1[i]));
             }
 
-            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze1.txt");
+            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze11.txt");
 
 
             int finalStateCount = 1;
@@ -250,10 +250,10 @@ public class maze1_weighted_sum implements Environment {
 
                         //totalCalcTimes:how many runs want to avg, here set 1 to ignor this loop
                         for (int trailIndex = 0; trailIndex < totalCalcTimes; trailIndex++) {
-                            maze = new maze1_weighted_sum("data/maze1.txt");
+                            maze = new maze1_weighted_sum("data/maze11.txt");
                             NXCS nxcs = new NXCS(maze, params);
 
-                            int i = 1;
+                            int stepi = 1;
                             maze.resetPosition();
 
                             finalStateCount = 1;
@@ -271,12 +271,14 @@ public class maze1_weighted_sum implements Environment {
 
                             while (finalStateCount < finalStateUpperBound) {
 
-                                nxcs.runIteration(finalStateCount, maze.getState(), weight, i, params.obj1[obj_num]);
+//                                System.out.println("next step:" + stepi);
 
-                                i++;
-//                            System.out.println("next step:" + i);
+                                nxcs.runIteration(finalStateCount, maze.getState(), weight, stepi, params.obj1[obj_num]);
 
-                                if (finalStateCount > 630) {
+                                stepi++;
+
+
+                                if (finalStateCount > 634) {
                                     System.out.println("print classifiers at finalstatecount: " + finalStateCount);
                                     maze.printOpenLocationClassifiers(finalStateCount, maze, nxcs, weight, params.obj1[obj_num]);
                                 }
@@ -311,7 +313,7 @@ public class maze1_weighted_sum implements Environment {
                                     while (test < maze.openLocations.size()) {
                                         // String state = maze.getState();
                                         String state = maze.getState();
-                                        // System.out.println("get state");
+                                        System.out.println(String.format("@1 Timestamp:%d, test:%d, resetPoint:%d, stepEachTrail:%d, state:%s", timestamp, test, resetPoint, stepEachTrail, state));
                                         int action = nxcs.classify(state, weight);
 
                                         if (stepEachTrail == 0) {
@@ -320,45 +322,27 @@ public class maze1_weighted_sum implements Environment {
                                         // System.out.println("choose action");
                                         stepEachTrail++;
                                         //TODO:return the PA1[action]
+                                        System.out.println(String.format("@2 Timestamp:%d, test:%d, resetPoint:%d, stepEachTrail:%d, state:%s", timestamp, test, resetPoint, stepEachTrail, state));
 
                                         double selectedPA_reward = nxcs.getSelectPA(action, state);
 
                                         ActionPareto r = maze.getReward(state, action, first_Freward);
-                                        if (r.getAction() == 5) {
-                                            System.out.println("get stucked:classfiers:");
-
-                                            maze.printOpenLocationClassifiers(finalStateCount, maze, nxcs, weight, params.obj1[obj_num]);
-                                        }
+//                                        if (r.getAction() == 5) {
+//                                            System.out.println("get stucked:classfiers:");
+//
+//                                            maze.printOpenLocationClassifiers(finalStateCount, maze, nxcs, weight, params.obj1[obj_num]);
+//                                        }
                                         // System.out.println("take testing:");
                                         if (maze.isEndOfProblem(maze.getState())) {
-                                            Point testPoint = maze.openLocations.get(test); //maze.getTestLocation(test, testLocations);
                                             test++;
-                                            resetPoint++;
+                                            if (test < maze.openLocations.size()) {
+                                                Point testPoint = maze.openLocations.get(test); //maze.getTestLocation(test, testLocations);
+                                                resetPoint++;
 
-                                            if (testPoint != null) {
                                                 maze.resetToSamePosition(testPoint);
-                                                System.out.println(String.format("Test:%d, resetPoint:%d, testLocation:%s", test, resetPoint, testPoint));
+                                                System.out.println(String.format("Reset to Test:%d, resetPoint:%d, testLocation:%s", test, test, testPoint));
                                                 stepEachTrail = 0;
-                                                //##########################
-//                                            if (test == 1) {
-//                                                resetPoint++;
-//                                                maze.resetToSamePosition(new Point(3, 1));
-//                                                stepEachTrail = 0;
-//                                            }
-//                                            if (test == 2) {
-//                                                resetPoint++;
-//                                                maze.resetToSamePosition(new Point(4, 1));
-//                                                stepEachTrail = 0;
-//                                            }
-//                                            if (test == 3) {
-//                                                resetPoint++;
-//                                                maze.resetToSamePosition(new Point(5, 1));
-//                                                stepEachTrail = 0;
-//                                            }
-
-                                                // maze.resetPosition();
                                             }
-
                                         }
                                         timestamp++;
                                     }
@@ -515,7 +499,7 @@ public class maze1_weighted_sum implements Environment {
      * @return True if the given (x, y) position is a valid position in the maze
      */
     private boolean isValidPosition(int x, int y) {
-        return !(x < 0 || y < 0 || y >= mazeTiles.length || x >= mazeTiles[0].length) && mazeTiles[y][x] != 'T';
+        return !(x < 0 || y < 0 || y >= mazeTiles.length || x >= mazeTiles[0].length) && mazeTiles[y][x] != 'T' && mazeTiles[y][x] != 'N';
     }
 
     /**
@@ -588,13 +572,15 @@ public class maze1_weighted_sum implements Environment {
             }
 
             if (count > 100) {
-                System.out.println("count>100:");
+//                System.out.println("count>100:");
 
-//			    printOpenLocationClassifiers(finalStateCount, maze, nxcs,weight);
+
+//                printOpenLocationClassifiers(0, this, null, null, first_reward);
+
 
                 resetPosition();
 //				action = -1;
-                System.out.println("reset:" + "x:" + x + " y:" + y);
+//                System.out.println("reset:" + "x:" + x + " y:" + y);
                 reward.setPareto(new Qvector(-1, 0));// TODO:is that
                 // correct??????
             }
