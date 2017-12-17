@@ -158,7 +158,7 @@ public class maze1_weighted_sum implements Environment {
         writer = new BufferedWriter(new FileWriter(logFile));
 
         int totalCalcTimes = 1;
-        int finalStateUpperBound = 635;
+        int finalStateUpperBound = 2335;
         int repeat_time = 1;
 
         act.add(0);
@@ -198,31 +198,31 @@ public class maze1_weighted_sum implements Environment {
             params.doGASubsumption = false;
             params.weights = new ArrayList<Point>();
             params.weights.add(new Point(0, 10));
-            params.weights.add(new Point(1, 9));
-            params.weights.add(new Point(2, 8));
-            params.weights.add(new Point(3, 7));
-            params.weights.add(new Point(4, 6));
-            params.weights.add(new Point(5, 5));
-            params.weights.add(new Point(6, 4));
-            params.weights.add(new Point(7, 3));
-            params.weights.add(new Point(8, 2));
-            params.weights.add(new Point(9, 1));
-            params.weights.add(new Point(10, 0));
+//            params.weights.add(new Point(1, 9));
+//            params.weights.add(new Point(2, 8));
+//            params.weights.add(new Point(3, 7));
+//            params.weights.add(new Point(4, 6));
+//            params.weights.add(new Point(5, 5));
+//            params.weights.add(new Point(6, 4));
+//            params.weights.add(new Point(7, 3));
+//            params.weights.add(new Point(8, 2));
+//            params.weights.add(new Point(9, 1));
+//            params.weights.add(new Point(10, 0));
 
-            params.obj1 = new int[]{10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-//            params.obj1 = new int[]{100};
+//            params.obj1 = new int[]{10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+            params.obj1 = new int[]{100};
 
             ArrayList<Point> reward_CSV = new ArrayList<Point>();
             for (int i = 0; i < params.obj1.length; i++) {
                 reward_CSV.add(new Point(params.obj1[i], 1000 - params.obj1[i]));
             }
 
-            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze11.txt");
+            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze4.txt");
 
 
             int finalStateCount = 1;
             boolean logged = false;
-            int resultInterval = 600;
+            int resultInterval = 2300;
             int numOfChartBars = 20;
             // ArrayList<Point> traceWeights = new ArrayList<Point>();
             // traceWeights.add(new Point(10, 90));
@@ -250,7 +250,7 @@ public class maze1_weighted_sum implements Environment {
 
                         //totalCalcTimes:how many runs want to avg, here set 1 to ignor this loop
                         for (int trailIndex = 0; trailIndex < totalCalcTimes; trailIndex++) {
-                            maze = new maze1_weighted_sum("data/maze11.txt");
+                            maze = new maze1_weighted_sum("data/maze4.txt");
                             NXCS nxcs = new NXCS(maze, params);
 
                             int stepi = 1;
@@ -278,10 +278,10 @@ public class maze1_weighted_sum implements Environment {
                                 stepi++;
 
 
-                                if (finalStateCount > 634) {
-                                    System.out.println("print classifiers at finalstatecount: " + finalStateCount);
-                                    maze.printOpenLocationClassifiers(finalStateCount, maze, nxcs, weight, params.obj1[obj_num]);
-                                }
+//                                if (finalStateCount > 2333) {
+//                                    System.out.println("print classifiers at finalstatecount: " + finalStateCount);
+//                                    maze.printOpenLocationClassifiers(finalStateCount, maze, nxcs, weight, params.obj1[obj_num]);
+//                                }
 
                                 if (maze.isEndOfProblem(maze.getState())) {
                                     maze.resetPosition();
@@ -300,29 +300,31 @@ public class maze1_weighted_sum implements Environment {
                                     System.out.println("testing process: Trained on " + finalStateCount + " final states");
 
                                     Integer test = 0;
+                                    int total_timestamp = 0;
                                     int timestamp = 0;
                                     System.out.println("strat testing:");
 
 
                                     //testing process for 4 open states from (2,1)
                                     int[] ActionSelect = new int[maze.openLocations.size()];
-                                    int stepEachTrail = 0;
+                                    int logFlag = 0;
                                     int resetPoint = 0;
 
                                     maze.resetToSamePosition(maze.openLocations.get(test));
                                     while (test < maze.openLocations.size()) {
-                                        // String state = maze.getState();
+
                                         String state = maze.getState();
-                                        System.out.println(String.format("@1 Timestamp:%d, test:%d, resetPoint:%d, stepEachTrail:%d, state:%s", timestamp, test, resetPoint, stepEachTrail, state));
+
+                                        System.out.println(String.format("@1 Test:%d, Steps:%d, state:%s", resetPoint, logFlag, maze.getxy()));
                                         int action = nxcs.classify(state, weight);
 
-                                        if (stepEachTrail == 0) {
+                                        if (logFlag == 0) {
                                             ActionSelect[resetPoint] = action;
                                         }
                                         // System.out.println("choose action");
-                                        stepEachTrail++;
+                                        logFlag++;
                                         //TODO:return the PA1[action]
-                                        System.out.println(String.format("@2 Timestamp:%d, test:%d, resetPoint:%d, stepEachTrail:%d, state:%s", timestamp, test, resetPoint, stepEachTrail, state));
+//                                        System.out.println(String.format("@2 Timestamp:%d, test:%d, resetPoint:%d, logFlag:%d, state:%s", timestamp, test, resetPoint, logFlag, maze.getxy()));
 
                                         double selectedPA_reward = nxcs.getSelectPA(action, state);
 
@@ -334,6 +336,7 @@ public class maze1_weighted_sum implements Environment {
 //                                        }
                                         // System.out.println("take testing:");
                                         if (maze.isEndOfProblem(maze.getState())) {
+                                            System.out.println(String.format("@3 Test:%d, Steps:%d, state:%s", resetPoint, logFlag, maze.getxy()));
                                             test++;
                                             if (test < maze.openLocations.size()) {
                                                 Point testPoint = maze.openLocations.get(test); //maze.getTestLocation(test, testLocations);
@@ -341,10 +344,10 @@ public class maze1_weighted_sum implements Environment {
 
                                                 maze.resetToSamePosition(testPoint);
                                                 System.out.println(String.format("Reset to Test:%d, resetPoint:%d, testLocation:%s", test, test, testPoint));
-                                                stepEachTrail = 0;
+                                                logFlag = 0;
                                             }
                                         }
-                                        timestamp++;
+                                        total_timestamp++;
                                     }
 
                                     //TODO:write first_selected_PA in CSV
@@ -363,7 +366,7 @@ public class maze1_weighted_sum implements Environment {
 
                                     finalStateCount++;
 
-                                    System.out.println("avg steps:" + ((double) (timestamp)) / test);
+                                    System.out.println("avg steps:" + ((double) (total_timestamp)) / test);
 
                                     System.out.println("classfiers:");
 
