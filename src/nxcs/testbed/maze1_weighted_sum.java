@@ -207,7 +207,7 @@ public class maze1_weighted_sum implements Environment {
 //            params.weights.add(new Point(7, 3));
 //            params.weights.add(new Point(8, 2));
 //            params.weights.add(new Point(9, 1));
-//            params.weights.add(new Point(10, 0));
+            params.weights.add(new Point(10, 0));
 
 //            params.obj1 = new int[]{10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
             params.obj1 = new int[]{100};
@@ -217,7 +217,7 @@ public class maze1_weighted_sum implements Environment {
                 reward_CSV.add(new Point(params.obj1[i], 1000 - params.obj1[i]));
             }
 
-            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze4.txt");
+            maze1_weighted_sum maze = new maze1_weighted_sum("data/maze5.txt");
 
 
             int finalStateCount = 1;
@@ -250,7 +250,7 @@ public class maze1_weighted_sum implements Environment {
 
                         //totalCalcTimes:how many runs want to avg, here set 1 to ignor this loop
                         for (int trailIndex = 0; trailIndex < totalCalcTimes; trailIndex++) {
-                            maze = new maze1_weighted_sum("data/maze4.txt");
+                            maze = new maze1_weighted_sum("data/maze6.txt");
                             NXCS nxcs = new NXCS(maze, params);
 
                             int stepi = 1;
